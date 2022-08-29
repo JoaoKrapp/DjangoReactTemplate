@@ -25,9 +25,7 @@ export const AuthProvider = ({children}) => {
         })
 
         let data = await response.json()
-        console.log(response.status)
-        console.log(jwt_decode(data.access))
-
+        console.log(data);
         if (response.status === 200) {
             setAuthToken(data)
             setUser(jwt_decode(data.access))
@@ -38,12 +36,29 @@ export const AuthProvider = ({children}) => {
         }
     }
 
+    let signUp = async (e) => {
+        e.preventDefault()
+        let response = await fetch('http://127.0.0.1:8000/api/signup/', {
+            method : 'POST',
+            headers : {
+                'Content-Type' : 'application/json'
+            },
+            body : JSON.stringify({'username' : e.target.username.value, 'password' : e.target.password.value, 'confirm_password' : e.target.confirm_password.value})
+        })
+
+        let data = await response.json()
+        console.log(data)
+
+        if (response.status === 200) {
+            history('/login')
+        }else{
+            history('/login')
+        }
+    }
+
     let updateToken = async ()=> {
 
         if(authToken){
-
-
-            console.log("PASSANDO POR UPDATE")
 
             let response = await fetch('http://127.0.0.1:8000/api/token/refresh/', {
                 method:'POST',
@@ -80,11 +95,13 @@ export const AuthProvider = ({children}) => {
         history('/login')
     }
 
+    // Data that will be thought out the application
     let contextData = {
         user:user,
         authToken: authToken,
         loginUser: loginUser,
         logoutUser : logoutUser,
+        signUp, signUp
     }
 
     useEffect(()=> {

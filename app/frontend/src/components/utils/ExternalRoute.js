@@ -2,12 +2,13 @@ import React, { useContext } from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
 import AuthContext from '../context/AuthContext';
 
-const PrivateRoute = () => {
+const ExternalRoute = () => {
     let { user } = useContext(AuthContext)
 
     // If authorized, return an outlet that will render child elements
     // If not, return element that will navigate to login page
-    return user ? <Outlet /> : <Navigate to="/login" />;
+    console.log("LMAO")
+    return user ? <Navigate to="/" /> : <Outlet /> ;
 }
 
-export default PrivateRoute
+export default ExternalRoute

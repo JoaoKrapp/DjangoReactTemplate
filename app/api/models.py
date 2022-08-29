@@ -11,3 +11,7 @@ class Person(models.Model):
 class Note(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     body = models.TextField()
+
+class Profile(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
+    
