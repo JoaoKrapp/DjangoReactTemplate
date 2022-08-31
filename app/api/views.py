@@ -6,14 +6,17 @@ from rest_framework import generics
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.views import APIView
+from rest_framework.parsers import MultiPartParser, FormParser
 
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 
-from .serializers import PersonSerializer, NoteSerializer
-from .models import Person, Note
+from .serializers import PersonSerializer, NoteSerializer, ImageSerializer
+from .models import Person, Profile
+from django.core.files import File
 
-def return_error():
+def error():
 	res = {"code": 400, "message": "Bad Requset"}
 	return Response(data=json.dumps(res), status=400)
 
@@ -69,6 +72,8 @@ def getNotes(request):
 	notes = user.note_set.all()
 	serializer = NoteSerializer(notes, many=True)
 	return Response(serializer.data)
+	
+# Important api's here
 
 @api_view(['POST'])
 def sign_up(request):
@@ -85,15 +90,15 @@ def sign_up(request):
 
 	username = request.data['username']
 	if not username:
-		return return_error()
+		return error()
 
 	password = request.data['password']
 	if not password:
-		return return_error()
+		return error()
 
 	confirm_password = request.data['confirm_password']
 	if not confirm_password:
-		return return_error()
+		return error()
 
 	# Verify information
 
@@ -102,7 +107,7 @@ def sign_up(request):
 	# Already exist a user with that username
 
 	if len(existing_username) != 0:
-		return return_error()
+		return error()
 
 	# Verify if the passwords are equal
 
@@ -111,7 +116,7 @@ def sign_up(request):
 	if confirm_password != password:
 		print(confirm_password)
 		print(password)
-		return return_error()
+		return error()
 
 	# Create new user
 
@@ -122,4 +127,19 @@ def sign_up(request):
 	
 	res = {"code": 200, "message": "Success"}
 	return Response(data=json.dumps(res), status=200)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def upload_avatar(request):
 	
+	print(request.FILES['file'])
+
+	avatar = request.FILES['file']
+	user = request.user
+
+	new_profile = Profile.objects.create(user=user,avatar=avatar)
+	new_profile.save()
+
+	res = {"code": 200, "message": "Success"}
+	return Response(data=json.dumps(res), status=200)

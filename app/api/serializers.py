@@ -12,3 +12,9 @@ class NoteSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Note
         fields = '__all__'
+
+
+class ImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Profile
+        fields = ['avatar']
